@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema 5S Digital - Gabrielly Silva</title>
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="https://files.manuscdn.com/user_upload_by_module/session_file/310519663476236047/aWhAVKuQKCrJuSmh.png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root {
+            --primary: #00467f; 
+            --success: #16a34a; --warning: #eab308;
+            --danger: #dc2626; --dark: #1f2937; --light: #f9fafb;
+            --border: #e5e7eb; --text: #374151;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            color: var(--text); min-height: 100vh; padding: 20px;
+        }
+        .container { max-width: 1200px; margin: 0 auto; }
+        header { background: white; padding: 20px 30px; border-radius: 12px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.07); border-top: 8px solid var(--primary); }
+        .logo-area { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; flex-wrap: wrap; gap: 15px; }
+        .logo-container { min-width: 150px; display: flex; align-items: center; }
+        .logo-img { height: 75px; width: auto; max-width: 100%; object-fit: contain; display: block; }
+        h1 { color: var(--primary); font-size: 22px; font-weight: 900; margin: 0; }
+        .header-info { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-top: 15px; }
+        .info-item { background: var(--light); padding: 12px; border-radius: 8px; border-left: 4px solid var(--primary); }
+        .info-label { font-size: 11px; color: #6b7280; text-transform: uppercase; font-weight: 700; margin-bottom: 5px; }
+        input[type="text"], input[type="date"], input[type="number"], select, textarea, input[type="password"] {
+            padding: 10px 12px; border: 1px solid var(--border); border-radius: 6px; font-size: 14px; width: 100%;
+        }
+        .section-title { font-size: 20px; font-weight: 800; color: var(--dark); margin: 30px 0 15px; display: flex; align-items: center; gap: 10px; }
+        .senso-card { background: white; border-radius: 12px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+        .senso-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 2px solid #f3f4f6; padding-bottom: 10px; }
+        .senso-title { font-size: 18px; font-weight: 800; color: var(--primary); }
+        .senso-score { font-size: 16px; font-weight: 700; padding: 6px 15px; border-radius: 50px; background: #f3f4f6; }
+        .item { margin-bottom: 20px; padding: 15px; background: #fcfcfc; border-radius: 8px; border: 1px solid #f0f0f0; border-left: 4px solid #e5e7eb; }
+        .item-label { font-weight: 600; margin-bottom: 8px; color: var(--dark); font-size: 15px; }
+        .item-lembrete { font-size: 12px; color: #6b7280; margin-bottom: 12px; background: #f8fafc; padding: 8px; border-radius: 4px; border-left: 3px solid #cbd5e1; }
+        .radio-group { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+        .radio-wrapper { display: flex; align-items: center; gap: 6px; background: white; padding: 8px 12px; border-radius: 6px; border: 1px solid var(--border); cursor: pointer; transition: 0.2s; flex: 1; min-width: 120px; justify-content: center; }
+        .radio-wrapper:hover { border-color: var(--primary); background: #eff6ff; }
+        .radio-wrapper input { width: 18px; height: 18px; cursor: pointer; }
+        .radio-label { cursor: pointer; font-weight: 600; font-size: 13px; }
+        .photo-btn { background: var(--primary); color: white; padding: 8px 15px; border-radius: 6px; font-size: 12px; font-weight: 700; cursor: pointer; display: inline-block; margin-top: 10px; }
+        .photo-preview { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 10px; }
+        .photo-item { position: relative; width: 80px; height: 80px; border-radius: 6px; overflow: hidden; border: 1px solid #ddd; }
+        .photo-item img { width: 100%; height: 100%; object-fit: cover; }
+        .photo-remove { position: absolute; top: 0; right: 0; background: var(--danger); color: white; border: none; width: 20px; height: 20px; cursor: pointer; font-size: 12px; }
+        .actions-footer { position: sticky; bottom: 20px; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 -4px 15px rgba(0,0,0,0.1); display: flex; gap: 15px; z-index: 100; margin-top: 40px; }
+        .btn-save { background: var(--success); color: white; flex: 2; font-size: 18px; font-weight: 800; border: none; border-radius: 8px; cursor: pointer; padding: 15px; }
+        .btn-clear { background: #94a3b8; color: white; flex: 1; border: none; border-radius: 8px; cursor: pointer; padding: 15px; }
+        
+        /* Admin & Footer Styles */
+        footer { text-align: center; margin-top: 30px; padding: 20px; color: #64748b; font-size: 12px; }
+        .admin-link { color: var(--primary); font-weight: 800; text-decoration: none; cursor: pointer; }
+        
+        .admin-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); display: none; align-items: center; justify-content: center; z-index: 1000; padding: 20px; }
+        .admin-content { background: white; padding: 30px; border-radius: 12px; max-width: 500px; width: 100%; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .admin-title { font-size: 20px; font-weight: 800; color: var(--primary); margin-bottom: 20px; border-bottom: 2px solid #eee; padding-bottom: 10px; }
+        
+        .loading-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; flex-direction: column; align-items: center; justify-content: center; z-index: 9999; color: white; }
+        .spinner { width: 40px; height: 40px; border: 4px solid #f3f3f3; border-top: 4px solid var(--success); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 15px; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+        
+        .setup-warning { background: #fff7ed; color: #9a3412; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: 700; border: 2px solid #fbbf24; display: none; }
+        .test-btn { background: var(--primary); color: white; border: none; padding: 10px 15px; border-radius: 6px; font-weight: 700; cursor: pointer; margin-bottom: 10px; font-size: 13px; width: 100%; }
+        .status-badge { display: inline-block; padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; margin-top: 5px; }
+    </style>
+</head>
+<body>
+    <div id="loading" class="loading-overlay"><div class="spinner"></div><p id="loading-text" style="font-weight: bold;">Processando...</p></div>
+
+    <!-- Admin Modal -->
+    <div id="adminModal" class="admin-modal">
+        <div class="admin-content">
+            <div class="admin-title">🔐 Área Administrativa - Gabrielly Silva</div>
+            <div id="loginSection">
+                <p style="margin-bottom: 15px; font-size: 14px;">Insira a senha de acesso para configurar o sistema.</p>
+                <input type="password" id="adminPass" placeholder="Senha de Acesso" style="margin-bottom: 15px;">
+                <button class="btn-save" style="width: 100%; padding: 10px;" onclick="checkLogin()">Entrar</button>
+                <button class="btn-clear" style="width: 100%; padding: 10px; margin-top: 10px;" onclick="closeAdmin()">Cancelar</button>
+            </div>
+            <div id="configSection" style="display: none;">
+                <div style="margin-bottom: 15px; padding: 10px; background: #f1f5f9; border-radius: 8px;">
+                    <p style="font-size: 11px; font-weight: 700; color: #475569;">DIAGNÓSTICO DO NAVEGADOR:</p>
+                    <div id="storageStatus" class="status-badge">Verificando...</div>
+                </div>
+
+                <p style="margin-bottom: 10px; font-size: 14px; font-weight: 700;">🔗 URL do Google Apps Script:</p>
+                <textarea id="configUrl" placeholder="https://script.google.com/macros/s/.../exec" style="margin-bottom: 10px; min-height: 80px; font-family: monospace; font-size: 12px;"></textarea>
+                
+                <button id="btnTestConn" class="test-btn" onclick="testConnection()">⚡ TESTAR CONEXÃO E SALVAR</button>
+                <p id="testStatus" style="font-size: 11px; margin-bottom: 15px; font-weight: bold;"></p>
+
+                <div id="directLinkSection" style="display:none; margin-top: 15px; padding: 10px; border: 1px dashed var(--primary); border-radius: 8px;">
+                    <p style="font-size: 11px; color: var(--primary); font-weight: 700;">OPÇÃO DE EMERGÊNCIA:</p>
+                    <p style="font-size: 10px; margin-bottom: 5px;">Se o seu navegador não salva, use este link para abrir o sistema já configurado:</p>
+                    <button class="test-btn" style="background: #0ea5e9; font-size: 10px;" onclick="copyDirectLink()">Copiar Link Direto</button>
+                </div>
+
+                <button class="btn-clear" style="width: 100%; padding: 10px; margin-top: 15px;" onclick="logoutAdmin()">Sair</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div id="setupWarning" class="setup-warning">⚠️ SISTEMA NÃO CONFIGURADO<br><span style="font-size: 12px; font-weight: 400;">Acesse a Área Administrativa no rodapé (Gabrielly Silva) para inserir a URL do Script.</span></div>
+
+        <header>
+            <div class="logo-area">
+                <div class="logo-container">
+                    <img src="https://files.manuscdn.com/user_upload_by_module/session_file/310519663476236047/aWhAVKuQKCrJuSmh.png" alt="Logo Cliente" class="logo-img">
+                </div>
+                <div style="text-align: right;"><h1 style="color: var(--primary);">AUDITORIA 5S</h1><p style="font-size: 12px; color: #6b7280;">Gestão Digital v30</p></div>
+            </div>
+            <div class="header-info">
+                <div class="info-item"><div class="info-label">Setor</div>
+                    <select id="setor" onchange="carregarAcoesReais()">
+                        <option value="">Selecione o setor...</option>
+                        <option value="2º TURNO">2º TURNO</option><option value="ACABAMENTO">ACABAMENTO</option>
+                        <option value="ACESSÓRIOS">ACESSÓRIOS</option><option value="ADMINISTRATIVO  (SALA AQUÁRIO 1 )">ADMINISTRATIVO  (SALA AQUÁRIO 1 )</option>
+                        <option value="ADMINISTRATIVO  (SALA AQUÁRIO 3 )">ADMINISTRATIVO  (SALA AQUÁRIO 3 )</option><option value="ADMINISTRATIVO ( RH )">ADMINISTRATIVO ( RH )</option>
+                        <option value="ADMINISTRATIVO - SALA AQUÁRIO 2">ADMINISTRATIVO - SALA AQUÁRIO 2</option><option value="CLICHERIA + SALA DE TINTAS">CLICHERIA + SALA DE TINTAS</option>
+                        <option value="DESCARGA - RECEBIMENTO">DESCARGA - RECEBIMENTO</option><option value="DIRETORIA">DIRETORIA</option>
+                        <option value="EXPEDIÇÃO">EXPEDIÇÃO</option><option value="INFRAESTRUTURA">INFRAESTRUTURA</option>
+                        <option value="MANUTENÇÃO (Mecânica)">MANUTENÇÃO (Mecânica)</option><option value="MANUTENÇÃO (SALA ADM + ALMOXARIFADO)">MANUTENÇÃO (SALA ADM + ALMOXARIFADO)</option>
+                        <option value="MANUTENÇÃO (Serralheria)">MANUTENÇÃO (Serralheria)</option><option value="MÁQUINAS 1 (VINCADEIRAS E SERRAS)">MÁQUINAS 1 (VINCADEIRAS E SERRAS)</option>
+                        <option value="MÁQUINAS 2 (IMPRESSORAS E C/V)">MÁQUINAS 2 (IMPRESSORAS E C/V)</option><option value="PROJETOS - PLOTTER">PROJETOS - PLOTTER</option>
+                        <option value="SERVIÇOS GERAIS (COZINHA E LIMPEZA)">SERVIÇOS GERAIS (COZINHA E LIMPEZA)</option>
+                    </select>
+                </div>
+                <div class="info-item"><div class="info-label">Resp. Setor</div><input type="text" id="responsavel" placeholder="Quem responde?"></div>
+                <div class="info-item"><div class="info-label">Auditor 1</div><input type="text" id="auditor1" placeholder="Nome do auditor"></div>
+                <div class="info-item"><div class="info-label">Auditor 2</div><input type="text" id="auditor2" placeholder="Nome do auditor 2"></div>
+                <div class="info-item"><div class="info-label">Data</div><input type="date" id="data"></div>
+            </div>
+        </header>
+
+        <div id="boxPendentes" style="background: #fffbeb; border-radius: 12px; padding: 20px; border-left: 6px solid var(--warning); margin-bottom: 25px; display: none;">
+            <h3 style="color: #92400e; margin-bottom: 10px;">⚠️ Ações Pendentes (Vindas da Planilha)</h3>
+            <div id="listaPendentes"></div>
+        </div>
+
+        <h2 class="section-title">📝 Checklist de Auditoria</h2>
+
+        <!-- Os itens de auditoria permanecem os mesmos das versões anteriores para manter a integridade -->
+        <div id="checklistContent">
+            <!-- 1. UTILIZAÇÃO -->
+            <div class="senso-card">
+                <div class="senso-header"><span class="senso-title">1. SEIRI - SENSO DE UTILIZAÇÃO</span><span class="senso-score" id="score-utilizacao">0%</span></div>
+                <div class="item">
+                    <div class="item-label">1.1. Existem objetos ou materiais desnecessários no setor?</div>
+                    <div class="item-lembrete">Objetos como: Ferramentas, peças de máquinas, materiais de expediente, materiais pessoais, materiais de outros setores; sobre máquinas, bancadas, carrinhos, mesas, piso, corredores etc.</div>
+                    <div class="radio-group">
+                        <label class="radio-wrapper"><input type="radio" name="1.1" value="0" onchange="calcularScore('utilizacao')"><span class="radio-label">🔴 Ruim</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="1.1" value="1" onchange="calcularScore('utilizacao')"><span class="radio-label">🟡 Regular</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="1.1" value="2" onchange="calcularScore('utilizacao')"><span class="radio-label">🟢 Bom</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="1.1" value="3" onchange="calcularScore('utilizacao')"><span class="radio-label">⭐ Excelente</span></label>
+                    </div>
+                    <input type="text" class="obs-input" data-cod="1.1" placeholder="Observação ou Ação necessária...">
+                    <div class="photo-section"><label class="photo-btn" onclick="this.nextElementSibling.click()">📸 FOTO</label><input type="file" accept="image/*" capture="environment" style="display:none" onchange="addPhoto(this, '1.1')"><div class="photo-preview" id="preview-1.1"></div></div>
+                </div>
+                <div class="item">
+                    <div class="item-label">1.2. Os avisos e informações expostos estão atualizados?</div>
+                    <div class="item-lembrete">Quadros de gestão visual, placas de avisos de manutenção, segurança no trabalho e recursos humanos, faixas de corredores, ordens de produção, procedimentos de produção etc.</div>
+                    <div class="radio-group">
+                        <label class="radio-wrapper"><input type="radio" name="1.2" value="0" onchange="calcularScore('utilizacao')"><span class="radio-label">🔴 Ruim</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="1.2" value="1" onchange="calcularScore('utilizacao')"><span class="radio-label">🟡 Regular</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="1.2" value="2" onchange="calcularScore('utilizacao')"><span class="radio-label">🟢 Bom</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="1.2" value="3" onchange="calcularScore('utilizacao')"><span class="radio-label">⭐ Excelente</span></label>
+                    </div>
+                    <input type="text" class="obs-input" data-cod="1.2" placeholder="Observação ou Ação necessária...">
+                    <div class="photo-section"><label class="photo-btn" onclick="this.nextElementSibling.click()">📸 FOTO</label><input type="file" accept="image/*" capture="environment" style="display:none" onchange="addPhoto(this, '1.2')"><div class="photo-preview" id="preview-1.2"></div></div>
+                </div>
+                <div class="item">
+                    <div class="item-label">1.3. Existe desperdício de água, energia etc?</div>
+                    <div class="item-lembrete">Torneiras e bebedores pingando, vazamentos em banheiros e máquinas, lâmpadas e equipamentos queimadas e em excesso.</div>
+                    <div class="radio-group">
+                        <label class="radio-wrapper"><input type="radio" name="1.3" value="0" onchange="calcularScore('utilizacao')"><span class="radio-label">🔴 Ruim</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="1.3" value="1" onchange="calcularScore('utilizacao')"><span class="radio-label">🟡 Regular</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="1.3" value="2" onchange="calcularScore('utilizacao')"><span class="radio-label">🟢 Bom</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="1.3" value="3" onchange="calcularScore('utilizacao')"><span class="radio-label">⭐ Excelente</span></label>
+                    </div>
+                    <input type="text" class="obs-input" data-cod="1.3" placeholder="Observação ou Ação necessária...">
+                    <div class="photo-section"><label class="photo-btn" onclick="this.nextElementSibling.click()">📸 FOTO</label><input type="file" accept="image/*" capture="environment" style="display:none" onchange="addPhoto(this, '1.3')"><div class="photo-preview" id="preview-1.3"></div></div>
+                </div>
+            </div>
+            <!-- Outros sensos seguem aqui (omitidos para brevidade no script, mas presentes no arquivo final) -->
+             <!-- 2. ORDENAÇÃO -->
+            <div class="senso-card">
+                <div class="senso-header"><span class="senso-title">2. SEITON - SENSO DE ORDENAÇÃO</span><span class="senso-score" id="score-ordenacao">0%</span></div>
+                <div class="item">
+                    <div class="item-label">2.1. Existem Identificações e Sinalizações adequada no setor?</div>
+                    <div class="item-lembrete">Áreas de circulação, extintores e hidrantes, equipamentos de emergência, áreas de trabalho, máquinas e equipamentos, quadros de ferramentas, etc.</div>
+                    <div class="radio-group">
+                        <label class="radio-wrapper"><input type="radio" name="2.1" value="0" onchange="calcularScore('ordenacao')"><span class="radio-label">🔴 Ruim</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="2.1" value="1" onchange="calcularScore('ordenacao')"><span class="radio-label">🟡 Regular</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="2.1" value="2" onchange="calcularScore('ordenacao')"><span class="radio-label">🟢 Bom</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="2.1" value="3" onchange="calcularScore('ordenacao')"><span class="radio-label">⭐ Excelente</span></label>
+                    </div>
+                    <input type="text" class="obs-input" data-cod="2.1" placeholder="Observação ou Ação necessária...">
+                    <div class="photo-section"><label class="photo-btn" onclick="this.nextElementSibling.click()">📸 FOTO</label><input type="file" accept="image/*" capture="environment" style="display:none" onchange="addPhoto(this, '2.1')"><div class="photo-preview" id="preview-2.1"></div></div>
+                </div>
+                <div class="item">
+                    <div class="item-label">2.2. Os corredores e áreas de circulação estão desobstruídos?</div>
+                    <div class="item-lembrete">Livre acesso a extintores, painéis elétricos, rotas de fuga e corredores principais.</div>
+                    <div class="radio-group">
+                        <label class="radio-wrapper"><input type="radio" name="2.2" value="0" onchange="calcularScore('ordenacao')"><span class="radio-label">🔴 Ruim</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="2.2" value="1" onchange="calcularScore('ordenacao')"><span class="radio-label">🟡 Regular</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="2.2" value="2" onchange="calcularScore('ordenacao')"><span class="radio-label">🟢 Bom</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="2.2" value="3" onchange="calcularScore('ordenacao')"><span class="radio-label">⭐ Excelente</span></label>
+                    </div>
+                    <input type="text" class="obs-input" data-cod="2.2" placeholder="Observação ou Ação necessária...">
+                    <div class="photo-section"><label class="photo-btn" onclick="this.nextElementSibling.click()">📸 FOTO</label><input type="file" accept="image/*" capture="environment" style="display:none" onchange="addPhoto(this, '2.2')"><div class="photo-preview" id="preview-2.2"></div></div>
+                </div>
+                <div class="item">
+                    <div class="item-label">2.3. Estão Definidos e são Adequados os locais para a guarda de recursos?</div>
+                    <div class="item-lembrete">Armários, arquivos, bancadas, gavetas, prateleiras, carrinhos, quadro sombra, etc.</div>
+                    <div class="radio-group">
+                        <label class="radio-wrapper"><input type="radio" name="2.3" value="0" onchange="calcularScore('ordenacao')"><span class="radio-label">🔴 Ruim</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="2.3" value="1" onchange="calcularScore('ordenacao')"><span class="radio-label">🟡 Regular</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="2.3" value="2" onchange="calcularScore('ordenacao')"><span class="radio-label">🟢 Bom</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="2.3" value="3" onchange="calcularScore('ordenacao')"><span class="radio-label">⭐ Excelente</span></label>
+                    </div>
+                    <input type="text" class="obs-input" data-cod="2.3" placeholder="Observação ou Ação necessária...">
+                    <div class="photo-section"><label class="photo-btn" onclick="this.nextElementSibling.click()">📸 FOTO</label><input type="file" accept="image/*" capture="environment" style="display:none" onchange="addPhoto(this, '2.3')"><div class="photo-preview" id="preview-2.3"></div></div>
+                </div>
+                <div class="item">
+                    <div class="item-label">2.4. Os objetos e ferramentas estão localizados em local apropriado?</div>
+                    <div class="item-lembrete">Pastas, procedimentos, ferramentas, carrinhos, EPI´s, material de limpeza, objetos pessoais, etc...</div>
+                    <div class="radio-group">
+                        <label class="radio-wrapper"><input type="radio" name="2.4" value="0" onchange="calcularScore('ordenacao')"><span class="radio-label">🔴 Ruim</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="2.4" value="1" onchange="calcularScore('ordenacao')"><span class="radio-label">🟡 Regular</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="2.4" value="2" onchange="calcularScore('ordenacao')"><span class="radio-label">🟢 Bom</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="2.4" value="3" onchange="calcularScore('ordenacao')"><span class="radio-label">⭐ Excelente</span></label>
+                    </div>
+                    <input type="text" class="obs-input" data-cod="2.4" placeholder="Observação ou Ação necessária...">
+                    <div class="photo-section"><label class="photo-btn" onclick="this.nextElementSibling.click()">📸 FOTO</label><input type="file" accept="image/*" capture="environment" style="display:none" onchange="addPhoto(this, '2.4')"><div class="photo-preview" id="preview-2.4"></div></div>
+                </div>
+            </div>
+
+            <!-- 3. LIMPEZA -->
+            <div class="senso-card">
+                <div class="senso-header"><span class="senso-title">3. SEISO - SENSO DE LIMPEZA</span><span class="senso-score" id="score-limpeza">0%</span></div>
+                <div class="item">
+                    <div class="item-label">3.1. Qual o nível de limpeza no local de trabalho?</div>
+                    <div class="item-lembrete">Sujeira provocada pelo processo: máquinas, bancadas, frestas, sob equipamentos etc.</div>
+                    <div class="radio-group">
+                        <label class="radio-wrapper"><input type="radio" name="3.1" value="0" onchange="calcularScore('limpeza')"><span class="radio-label">🔴 Ruim</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="3.1" value="1" onchange="calcularScore('limpeza')"><span class="radio-label">🟡 Regular</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="3.1" value="2" onchange="calcularScore('limpeza')"><span class="radio-label">🟢 Bom</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="3.1" value="3" onchange="calcularScore('limpeza')"><span class="radio-label">⭐ Excelente</span></label>
+                    </div>
+                    <input type="text" class="obs-input" data-cod="3.1" placeholder="Observação ou Ação necessária...">
+                    <div class="photo-section"><label class="photo-btn" onclick="this.nextElementSibling.click()">📸 FOTO</label><input type="file" accept="image/*" capture="environment" style="display:none" onchange="addPhoto(this, '3.1')"><div class="photo-preview" id="preview-3.1"></div></div>
+                </div>
+                <div class="item">
+                    <div class="item-label">3.2. Qual o estado de conservação das Máquinas, instalações e Recursos?</div>
+                    <div class="item-lembrete">Vazamentos de óleo, paredes sujas, vidros quebrados, cortinas rasgadas, etc.</div>
+                    <div class="radio-group">
+                        <label class="radio-wrapper"><input type="radio" name="3.2" value="0" onchange="calcularScore('limpeza')"><span class="radio-label">🔴 Ruim</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="3.2" value="1" onchange="calcularScore('limpeza')"><span class="radio-label">🟡 Regular</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="3.2" value="2" onchange="calcularScore('limpeza')"><span class="radio-label">🟢 Bom</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="3.2" value="3" onchange="calcularScore('limpeza')"><span class="radio-label">⭐ Excelente</span></label>
+                    </div>
+                    <input type="text" class="obs-input" data-cod="3.2" placeholder="Observação ou Ação necessária...">
+                    <div class="photo-section"><label class="photo-btn" onclick="this.nextElementSibling.click()">📸 FOTO</label><input type="file" accept="image/*" capture="environment" style="display:none" onchange="addPhoto(this, '3.2')"><div class="photo-preview" id="preview-3.2"></div></div>
+                </div>
+            </div>
+
+            <!-- 4. PADRONIZAÇÃO -->
+            <div class="senso-card">
+                <div class="senso-header"><span class="senso-title">4. SEIKETSU - SENSO DE PADRONIZAÇÃO</span><span class="senso-score" id="score-padronizacao">0%</span></div>
+                <div class="item">
+                    <div class="item-label">4.1. Qual o nível de organização e asseio dos funcionários?</div>
+                    <div class="item-lembrete">Uso correto do uniforme, crachá, EPI's, cabelos presos, barbas feitas, etc.</div>
+                    <div class="radio-group">
+                        <label class="radio-wrapper"><input type="radio" name="4.1" value="0" onchange="calcularScore('padronizacao')"><span class="radio-label">🔴 Ruim</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="4.1" value="1" onchange="calcularScore('padronizacao')"><span class="radio-label">🟡 Regular</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="4.1" value="2" onchange="calcularScore('padronizacao')"><span class="radio-label">🟢 Bom</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="4.1" value="3" onchange="calcularScore('padronizacao')"><span class="radio-label">⭐ Excelente</span></label>
+                    </div>
+                    <input type="text" class="obs-input" data-cod="4.1" placeholder="Observação ou Ação necessária...">
+                    <div class="photo-section"><label class="photo-btn" onclick="this.nextElementSibling.click()">📸 FOTO</label><input type="file" accept="image/*" capture="environment" style="display:none" onchange="addPhoto(this, '4.1')"><div class="photo-preview" id="preview-4.1"></div></div>
+                </div>
+                <div class="item">
+                    <div class="item-label">4.2. As condições de Higiene e Segurança são mantidas?</div>
+                    <div class="item-lembrete">Estado de conservação de banheiros, bebedouros, refeitório e áreas comuns.</div>
+                    <div class="radio-group">
+                        <label class="radio-wrapper"><input type="radio" name="4.2" value="0" onchange="calcularScore('padronizacao')"><span class="radio-label">🔴 Ruim</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="4.2" value="1" onchange="calcularScore('padronizacao')"><span class="radio-label">🟡 Regular</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="4.2" value="2" onchange="calcularScore('padronizacao')"><span class="radio-label">🟢 Bom</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="4.2" value="3" onchange="calcularScore('padronizacao')"><span class="radio-label">⭐ Excelente</span></label>
+                    </div>
+                    <input type="text" class="obs-input" data-cod="4.2" placeholder="Observação ou Ação necessária...">
+                    <div class="photo-section"><label class="photo-btn" onclick="this.nextElementSibling.click()">📸 FOTO</label><input type="file" accept="image/*" capture="environment" style="display:none" onchange="addPhoto(this, '4.2')"><div class="photo-preview" id="preview-4.2"></div></div>
+                </div>
+            </div>
+
+            <!-- 5. AUTO DISCIPLINA -->
+            <div class="senso-card">
+                <div class="senso-header"><span class="senso-title">5. SHITSUKE - SENSO DE AUTO DISCIPLINA</span><span class="senso-score" id="score-auto">0%</span></div>
+                <div class="item">
+                    <div class="item-label">5.1. O lixo é descartado de forma correta?</div>
+                    <div class="item-lembrete">São utilizados os lixeiros conforme as suas identificações.</div>
+                    <div class="radio-group">
+                        <label class="radio-wrapper"><input type="radio" name="5.1" value="0" onchange="calcularScore('auto')"><span class="radio-label">🔴 Ruim</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="5.1" value="1" onchange="calcularScore('auto')"><span class="radio-label">🟡 Regular</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="5.1" value="2" onchange="calcularScore('auto')"><span class="radio-label">🟢 Bom</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="5.1" value="3" onchange="calcularScore('auto')"><span class="radio-label">⭐ Excelente</span></label>
+                    </div>
+                    <input type="text" class="obs-input" data-cod="5.1" placeholder="Observação ou Ação necessária...">
+                    <div class="photo-section"><label class="photo-btn" onclick="this.nextElementSibling.click()">📸 FOTO</label><input type="file" accept="image/*" capture="environment" style="display:none" onchange="addPhoto(this, '5.1')"><div class="photo-preview" id="preview-5.1"></div></div>
+                </div>
+                
+                <div class="item" style="border-left: 4px solid var(--primary); background: #fdfdfd;">
+                    <div class="item-label">5.2. Conhecimento sobre Qualidade e Valores (Entrevista com Colaborador)</div>
+                    <div class="item-lembrete">Selecione a pergunta realizada ao colaborador, registre o nome dele e a resposta obtida.</div>
+                    
+                    <div style="margin-bottom: 15px;">
+                        <label style="font-size: 12px; font-weight: 700; color: var(--dark); display: block; margin-bottom: 5px;">Selecione a Pergunta Feita:</label>
+                        <select id="pergunta-5.2" style="background: white; font-weight: 500;">
+                            <option value="">Selecione a pergunta da entrevista...</option>
+                            <option value="Quem é responsável pela qualidade do produto e/ou processo?">1. Quem é responsável pela qualidade do produto e/ou processo?</option>
+                            <option value="Qual é a sua participação em seu processo no dia a dia para contribuir com a qualidade, seja no produto ou serviços prestados aos seus cliente (interno e/ou externo)?">2. Qual é a sua participação em seu processo no dia a dia para contribuir com a qualidade, seja no produto ou serviços prestados aos seus cliente (interno e/ou externo)?</option>
+                            <option value="Quais são os valores da SETA e dê um exemplo do que você pode fazer para contribuir/realçar esse valor?">3. Quais são os valores da SETA e dê um exemplo do que você pode fazer para contribuir/realçar esse valor?</option>
+                            <option value="Escolha um indicador o quadro de gerênciamento visual e solicite para o colaborador explicar.">4. Escolha um indicador o quadro de gerênciamento visual e solicite para o colaborador explicar.</option>
+                        </select>
+                    </div>
+
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px;">
+                        <div>
+                            <label style="font-size: 11px; font-weight: 700; color: #6b7280; display: block; margin-bottom: 3px;">COLABORADOR AUDITADO:</label>
+                            <input type="text" id="auditado-5.2" placeholder="Nome do colaborador entrevistado">
+                        </div>
+                        <div>
+                            <label style="font-size: 11px; font-weight: 700; color: #6b7280; display: block; margin-bottom: 3px;">AVALIAÇÃO / NOTA:</label>
+                            <div class="radio-group" style="margin-bottom: 0;">
+                                <label class="radio-wrapper"><input type="radio" name="5.2" value="0" onchange="calcularScore('auto')"><span class="radio-label">🔴 Ruim</span></label>
+                                <label class="radio-wrapper"><input type="radio" name="5.2" value="1" onchange="calcularScore('auto')"><span class="radio-label">🟡 Regular</span></label>
+                                <label class="radio-wrapper"><input type="radio" name="5.2" value="2" onchange="calcularScore('auto')"><span class="radio-label">🟢 Bom</span></label>
+                                <label class="radio-wrapper"><input type="radio" name="5.2" value="3" onchange="calcularScore('auto')"><span class="radio-label">⭐ Excelente</span></label>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="margin-bottom: 12px;">
+                        <label style="font-size: 11px; font-weight: 700; color: #6b7280; display: block; margin-bottom: 3px;">RESPOSTA DO COLABORADOR / EVIDÊNCIA:</label>
+                        <textarea id="resposta-5.2" class="obs-input" placeholder="Digite o que o colaborador respondeu..." style="min-height: 60px;"></textarea>
+                    </div>
+
+                    <input type="text" class="obs-input" data-cod="5.2" placeholder="Observações gerais do auditor para o item 5.2..." style="display:none;">
+                    <div class="photo-section"><label class="photo-btn" onclick="this.nextElementSibling.click()">📸 FOTO</label><input type="file" accept="image/*" capture="environment" style="display:none" onchange="addPhoto(this, '5.2')"><div class="photo-preview" id="preview-5.2"></div></div>
+                </div>
+
+                <div class="item">
+                    <div class="item-label">5.3. Informações e indicadores atualizados?</div>
+                    <div class="item-lembrete">Quadros de gerenciamento visual (metas, OTIF, qualidade), planilha de auditoria do 5S.</div>
+                    <div class="radio-group">
+                        <label class="radio-wrapper"><input type="radio" name="5.3" value="0" onchange="calcularScore('auto')"><span class="radio-label">🔴 Ruim</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="5.3" value="1" onchange="calcularScore('auto')"><span class="radio-label">🟡 Regular</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="5.3" value="2" onchange="calcularScore('auto')"><span class="radio-label">🟢 Bom</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="5.3" value="3" onchange="calcularScore('auto')"><span class="radio-label">⭐ Excelente</span></label>
+                    </div>
+                    <input type="text" class="obs-input" data-cod="5.3" placeholder="Observação ou Ação necessária...">
+                    <div class="photo-section"><label class="photo-btn" onclick="this.nextElementSibling.click()">📸 FOTO</label><input type="file" accept="image/*" capture="environment" style="display:none" onchange="addPhoto(this, '5.3')"><div class="photo-preview" id="preview-5.3"></div></div>
+                </div>
+                <div class="item">
+                    <div class="item-label">5.4. Tratativa de problemas anteriores?</div>
+                    <div class="item-lembrete">Ações executadas ou em andamento conforme plano de ação anterior.</div>
+                    <div class="radio-group">
+                        <label class="radio-wrapper"><input type="radio" name="5.4" value="0" onchange="calcularScore('auto')"><span class="radio-label">🔴 Ruim</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="5.4" value="1" onchange="calcularScore('auto')"><span class="radio-label">🟡 Regular</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="5.4" value="2" onchange="calcularScore('auto')"><span class="radio-label">🟢 Bom</span></label>
+                        <label class="radio-wrapper"><input type="radio" name="5.4" value="3" onchange="calcularScore('auto')"><span class="radio-label">⭐ Excelente</span></label>
+                    </div>
+                    <input type="text" class="obs-input" data-cod="5.4" placeholder="Observação ou Ação necessária...">
+                    <div class="photo-section"><label class="photo-btn" onclick="this.nextElementSibling.click()">📸 FOTO</label><input type="file" accept="image/*" capture="environment" style="display:none" onchange="addPhoto(this, '5.4')"><div class="photo-preview" id="preview-5.4"></div></div>
+                </div>
+            </div>
+        </div>
+
+        <h2 class="section-title">🎯 Plano de Ação (Novas Pendências)</h2>
+        <div class="senso-card" style="border-left: 6px solid #dc2626;">
+            <h3 style="margin-bottom: 20px; color: #dc2626;">➕ Registrar Nova Ação de Melhoria</h3>
+            <div style="display: grid; gap: 15px;">
+                <textarea id="descricaoAcao" placeholder="O quê deve ser feito?" style="min-height: 80px;"></textarea>
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <input type="text" id="responsavelAcao" placeholder="Quem fará?">
+                    <input type="number" id="prazoAcao" placeholder="Prazo (Dias)">
+                </div>
+                <select id="sensoAcao">
+                    <option value="">Senso Relacionado...</option>
+                    <option value="UTILIZAÇÃO">UTILIZAÇÃO</option><option value="ORDENAÇÃO">ORDENAÇÃO</option>
+                    <option value="LIMPEZA">LIMPEZA</option><option value="PADRONIZAÇÃO">PADRONIZAÇÃO</option>
+                    <option value="AUTO DISCIPLINA">AUTO DISCIPLINA</option>
+                </select>
+                <button class="btn-save" style="background: var(--primary); padding: 10px;" onclick="adicionarAcaoMemoria()">✅ Adicionar à Lista de Envio</button>
+            </div>
+            <div id="listaNovasAcoes" style="margin-top: 20px;"></div>
+        </div>
+
+        <div class="actions-footer">
+            <button class="btn-save" onclick="salvarInspeccao()">🚀 SALVAR E SINCRONIZAR</button>
+            <button class="btn-clear" onclick="limparFormulario()">🔄 LIMPAR TUDO</button>
+        </div>
+
+        <footer>
+            Desenvolvido por <span class="admin-link" onclick="openAdmin()">Gabrielly Silva</span> - Sistema de Gestão 5S Digital &copy; 2026
+        </footer>
+    </div>
+
+    <script>
+        const STORAGE_KEY = 'GABRIELLY_SILVA_5S_CONFIG';
+        let URL_PLANILHA = "";
+        let novasAcoesParaEnviar = [];
+
+        // Inicialização Reforçada
+        window.onload = function() {
+            document.getElementById('data').valueAsDate = new Date();
+            carregarConfiguracao();
+        };
+
+        function carregarConfiguracao() {
+            // Tenta carregar da URL primeiro (Modo de Emergência)
+            const params = new URLSearchParams(window.location.search);
+            const urlFromQuery = params.get('config');
+            
+            // Tenta carregar do LocalStorage
+            let savedUrl = "";
+            try { URL_PLANILHA = localStorage.getItem(STORAGE_KEY) || ""; } catch(e) {}
+
+            if(urlFromQuery && urlFromQuery.startsWith("https://script.google.com/")) {
+                URL_PLANILHA = urlFromQuery;
+                console.log("Configuração carregada via URL.");
+            }
+
+            verificarExibicaoWarning();
+        }
+
+        function verificarExibicaoWarning() {
+            const warning = document.getElementById('setupWarning');
+            if(!URL_PLANILHA || !URL_PLANILHA.startsWith("https://script.google.com/")) {
+                warning.style.display = 'block';
+            } else {
+                warning.style.display = 'none';
+            }
+        }
+
+        function openAdmin() {
+            document.getElementById('adminModal').style.display = 'flex';
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('configSection').style.display = 'none';
+            document.getElementById('adminPass').value = "";
+            verificarSaudeStorage();
+        }
+
+        function verificarSaudeStorage() {
+            const statusEl = document.getElementById('storageStatus');
+            try {
+                localStorage.setItem('TEST_STORAGE', '1');
+                localStorage.removeItem('TEST_STORAGE');
+                statusEl.textContent = "✅ MEMÓRIA ATIVA (OK)";
+                statusEl.style.background = "#dcfce7"; statusEl.style.color = "#166534";
+            } catch(e) {
+                statusEl.textContent = "❌ MEMÓRIA BLOQUEADA (RESTRIÇÃO DO NAVEGADOR)";
+                statusEl.style.background = "#fee2e2"; statusEl.style.color = "#991b1b";
+                document.getElementById('directLinkSection').style.display = 'block';
+            }
+        }
+
+        function closeAdmin() { document.getElementById('adminModal').style.display = 'none'; }
+
+        function checkLogin() {
+            if(document.getElementById('adminPass').value === "gabrielly2026") {
+                document.getElementById('loginSection').style.display = 'none';
+                document.getElementById('configSection').style.display = 'block';
+                document.getElementById('configUrl').value = URL_PLANILHA;
+            } else { alert("Senha incorreta!"); }
+        }
+
+        async function testConnection() {
+            const url = document.getElementById('configUrl').value.trim();
+            const status = document.getElementById('testStatus');
+            if(!url.startsWith("https://script.google.com/")) {
+                status.style.color = "red"; status.textContent = "❌ URL Inválida!"; return;
+            }
+            
+            status.style.color = "blue"; status.textContent = "⏳ Validando e salvando...";
+            
+            // Salva antes de testar para garantir persistência
+            try {
+                localStorage.setItem(STORAGE_KEY, url);
+                URL_PLANILHA = url;
+                verificarExibicaoWarning();
+                
+                // Teste de conexão (pode falhar por CORS mesmo com URL certa, então tratamos com cautela)
+                const resp = await fetch(`${url}?setor=TESTE_CONEXAO`, { mode: 'no-cors' });
+                status.style.color = "green";
+                status.textContent = "✅ Configuração salva! O sistema está pronto.";
+                setTimeout(closeAdmin, 1500);
+            } catch(e) {
+                status.style.color = "orange";
+                status.textContent = "⚠️ Salvo localmente, mas o navegador bloqueou o teste de rede. Tente usar o formulário.";
+            }
+        }
+
+        function copyDirectLink() {
+            const url = document.getElementById('configUrl').value.trim();
+            if(!url) return alert("Insira a URL primeiro!");
+            const direct = window.location.href.split('?')[0] + "?config=" + encodeURIComponent(url);
+            navigator.clipboard.writeText(direct).then(() => alert("Link de emergência copiado! Use este link para abrir o sistema sempre configurado."));
+        }
+
+        function logoutAdmin() { closeAdmin(); }
+
+        // Funções de Cálculo e Envio (mantidas da v29)
+        function calcularScore(sid) {
+            const sensoMap = { 'utilizacao': ['1.1','1.2','1.3'], 'ordenacao': ['2.1','2.2','2.3','2.4'], 'limpeza': ['3.1','3.2'], 'padronizacao': ['4.1','4.2'], 'auto': ['5.1','5.2','5.3','5.4'] };
+            const ids = sensoMap[sid]; let total = 0, count = 0;
+            ids.forEach(id => { const v = document.querySelector(`input[name="${id}"]:checked`); if(v) { total += parseInt(v.value); count++; } });
+            const perc = count ? (total / (ids.length * 3) * 100).toFixed(1) : 0;
+            const el = document.getElementById(`score-${sid}`); el.textContent = perc + "%";
+            el.style.color = perc >= 90 ? '#16a34a' : perc >= 75 ? '#ca8a04' : '#dc2626';
+        }
+
+        async function carregarAcoesReais() {
+            if(!URL_PLANILHA) return;
+            const setor = document.getElementById('setor').value;
+            const box = document.getElementById('boxPendentes'); const lista = document.getElementById('listaPendentes');
+            if(!setor) { box.style.display = 'none'; return; }
+            lista.innerHTML = "<p>Buscando ações...</p>"; box.style.display = 'block';
+            try {
+                const resp = await fetch(`${URL_PLANILHA}?setor=${encodeURIComponent(setor)}`);
+                const acoes = await resp.json();
+                if(acoes.length) { lista.innerHTML = acoes.map(a => `<div style="padding:10px; background:white; border-radius:8px; margin-bottom:8px; box-shadow:0 2px 4px rgba(0,0,0,0.05); border-left: 4px solid var(--warning);"><strong>${a.descricao}</strong><br><small>Resp: ${a.responsavel}</small></div>`).join(''); }
+                else { lista.innerHTML = "<p>Sem pendências. 👏</p>"; }
+            } catch(e) { lista.innerHTML = "<p>Erro ao carregar ações.</p>"; }
+        }
+
+        function adicionarAcaoMemoria() {
+            const desc = document.getElementById('descricaoAcao').value, resp = document.getElementById('responsavelAcao').value;
+            if(!desc || !resp) return alert("Preencha Descrição e Responsável!");
+            novasAcoesParaEnviar.push({ descricao: desc, responsavel: resp, prazo: document.getElementById('prazoAcao').value, senso: document.getElementById('sensoAcao').value });
+            document.getElementById('listaNovasAcoes').innerHTML += `<div style="padding:10px; background:#f0f9ff; border-radius:8px; margin-bottom:5px; border: 1px solid #bae6fd;"><strong>${desc}</strong></div>`;
+            document.getElementById('descricaoAcao').value = ''; document.getElementById('responsavelAcao').value = '';
+        }
+
+        async function addPhoto(input, cod) {
+            if(input.files[0]) {
+                const reader = new FileReader(); reader.readAsDataURL(input.files[0]);
+                reader.onload = async e => {
+                    const img = new Image(); img.src = e.target.result;
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas'); const scale = Math.min(800 / img.width, 600 / img.height, 1);
+                        canvas.width = img.width * scale; canvas.height = img.height * scale;
+                        canvas.getContext('2d').drawImage(img, 0, 0, canvas.width, canvas.height);
+                        const div = document.createElement('div'); div.className = 'photo-item';
+                        div.innerHTML = `<img src="${canvas.toDataURL('image/jpeg', 0.7)}"><button class="photo-remove" onclick="this.parentElement.remove()">×</button>`;
+                        document.getElementById(`preview-${cod}`).appendChild(div);
+                    };
+                };
+            }
+        }
+
+        async function salvarInspeccao() {
+            if(!URL_PLANILHA) return alert("Configure a URL no painel Admin!");
+            const setor = document.getElementById('setor').value, aud1 = document.getElementById('auditor1').value;
+            if(!setor || !aud1) return alert("Preencha Setor e Auditor!");
+            document.getElementById('loading').style.display = 'flex';
+            const insp = { setor, auditor1: aud1, auditor2: document.getElementById('auditor2').value, responsavel: document.getElementById('responsavel').value, data: document.getElementById('data').value, sensos: {}, itens: [], anexos: [], acoes: novasAcoesParaEnviar };
+            const sensoMap = { 'utilizacao': ['1.1','1.2','1.3'], 'ordenacao': ['2.1','2.2','2.3','2.4'], 'limpeza': ['3.1','3.2'], 'padronizacao': ['4.1','4.2'], 'auto': ['5.1','5.2','5.3','5.4'] };
+            let totalPerc = 0;
+            for (let sId in sensoMap) {
+                let sP = 0;
+                sensoMap[sId].forEach(cod => {
+                    const r = document.querySelector(`input[name="${cod}"]:checked`), val = r ? parseInt(r.value) : 0; sP += val;
+                    const obsInput = document.querySelector(`input[data-cod="${cod}"]`); let obsFinal = obsInput ? obsInput.value : "";
+                    if(cod === '5.2') { obsFinal = `[Entrevista: ${document.getElementById('pergunta-5.2').value}] [Auditado: ${document.getElementById('auditado-5.2').value}] [Resposta: ${document.getElementById('resposta-5.2').value}] ` + obsFinal; }
+                    insp.itens.push({ cod: cod, label: "Item "+cod, pontos: val, obs: obsFinal });
+                    document.querySelectorAll(`#preview-${cod.replace('.','\\\\.')} img`).forEach(img => insp.anexos.push({ cod: cod, base64: img.src }));
+                });
+                const perc = (sP / (sensoMap[sId].length * 3) * 100); insp.sensos[sId] = { nome: sId.toUpperCase(), perc: perc.toFixed(1) }; totalPerc += perc;
+            }
+            insp.media = (totalPerc / 5).toFixed(1);
+            try {
+                await fetch(URL_PLANILHA, { method: 'POST', mode: 'no-cors', body: JSON.stringify({ inspecao: insp }) });
+                alert("🚀 Auditoria enviada com sucesso!"); location.reload();
+            } catch(e) { alert("❌ Erro ao enviar. Verifique a URL."); } finally { document.getElementById('loading').style.display = 'none'; }
+        }
+
+        function limparFormulario() { if(confirm("Limpar tudo?")) location.reload(); }
+    </script>
+</body>
+</html>
